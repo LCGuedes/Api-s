@@ -1,13 +1,20 @@
 interface IhttpRequest {
-  body: {
+  body?: {
     email?: string;
     password?: string;
   };
 }
 
 class LoginRouter {
-  route(httpRequest: IhttpRequest) {
-    if (!httpRequest.body.email || !httpRequest.body.password) {
+  route(httpRequest?: IhttpRequest) {
+    if (!httpRequest || !httpRequest.body) {
+      return {
+        statusCode: 500,
+      };
+    }
+    const { email, password } = httpRequest.body;
+
+    if (!email || !password) {
       return {
         statusCode: 400,
       };
@@ -41,5 +48,21 @@ describe("login router", () => {
     const httpResponse = sut.route(httpRequest);
 
     expect(httpResponse.statusCode).toBe(400);
+  });
+
+  it("Should return status 500 if httpRequest is not provided", () => {
+    const sut = new LoginRouter();
+
+    const httpResponse = sut.route();
+
+    expect(httpResponse.statusCode).toBe(500);
+  });
+
+  it("Should return status 500 if httpRequest body is not provided", () => {
+    const sut = new LoginRouter();
+
+    const httpResponse = sut.route({});
+
+    expect(httpResponse.statusCode).toBe(500);
   });
 });
