@@ -1,5 +1,7 @@
 import { LoginRouter } from "./loginRouter";
 import { MissingParamError } from "../helps/missingParamError";
+import { ServerError } from "../helps/serverError";
+import { UnauthorizedError } from "../helps/unauthorized";
 
 export class AuthUseCaseSpy {
   email: string;
@@ -56,6 +58,7 @@ describe("login router", () => {
     const httpResponse = sut.route();
 
     expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
   });
 
   it("Should return status 500 if httpRequest body is not provided", () => {
@@ -64,6 +67,7 @@ describe("login router", () => {
     const httpResponse = sut.route({});
 
     expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
   });
 
   it("Should call AuthUseCase with correct params", () => {
@@ -93,5 +97,6 @@ describe("login router", () => {
 
     const httpResponse = sut.route(httpRequest);
     expect(httpResponse.statusCode).toBe(401);
+    expect(httpResponse.body).toEqual(new UnauthorizedError());
   });
 });

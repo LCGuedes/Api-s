@@ -14,8 +14,8 @@ export class LoginRouter {
     this.authUseCase = authUseCase;
   }
   route(httpRequest?: IhttpRequest) {
-    if (!httpRequest) return HttpResponse.serverError("httpRequest");
-    if (!httpRequest.body) return HttpResponse.serverError("body");
+    if (!httpRequest) return HttpResponse.serverError();
+    if (!httpRequest.body) return HttpResponse.serverError();
 
     const { email, password } = httpRequest.body;
 
@@ -23,8 +23,6 @@ export class LoginRouter {
     if (!password) return HttpResponse.badRequest("password");
 
     this.authUseCase.auth(email, password);
-    return {
-      statusCode: 401,
-    };
+    return HttpResponse.unauthorizedError();
   }
 }
