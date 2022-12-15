@@ -1,4 +1,5 @@
 import { HttpResponse } from "../helps/httpResponse";
+import { AuthUseCaseSpy } from "./loginRouter.spec";
 
 interface IhttpRequest {
   body?: {
@@ -8,6 +9,10 @@ interface IhttpRequest {
 }
 
 export class LoginRouter {
+  authUseCase: AuthUseCaseSpy;
+  constructor(authUseCase: AuthUseCaseSpy) {
+    this.authUseCase = authUseCase;
+  }
   route(httpRequest?: IhttpRequest) {
     if (!httpRequest) return HttpResponse.serverError("httpRequest");
     if (!httpRequest.body) return HttpResponse.serverError("body");
@@ -16,5 +21,7 @@ export class LoginRouter {
 
     if (!email) return HttpResponse.badRequest("email");
     if (!password) return HttpResponse.badRequest("password");
+
+    this.authUseCase.auth(email, password);
   }
 }
