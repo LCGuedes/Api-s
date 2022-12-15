@@ -7,26 +7,35 @@ interface IhttpRequest {
 
 class LoginRouter {
   route(httpRequest?: IhttpRequest) {
-    if (!httpRequest || !httpRequest.body) {
-      return HttpResponse.serverError();
-    }
+    if (!httpRequest) return HttpResponse.serverError("httpRequest");
+    if (!httpRequest.body) return HttpResponse.serverError("body");
+
     const { email, password } = httpRequest.body;
-    if (!email || !password) {
-      return HttpResponse.badRequest();
-    }
+
+    if (!email) return HttpResponse.badRequest("email");
+    if (!password) return HttpResponse.badRequest("password");
   }
 }
 
 class HttpResponse {
-  static badRequest() {
+  static badRequest(paramName: string) {
     return {
       statusCode: 400,
+      body: new MissingParamError(paramName),
     };
   }
-  static serverError() {
+  static serverError(paramName: string) {
     return {
       statusCode: 500,
+      body: new MissingParamError(paramName),
     };
+  }
+}
+
+class MissingParamError extends Error {
+  constructor(paramName: string) {
+    super(`missing param ${paramName}`);
+    this.name = "MissingParamError";
   }
 }
 
@@ -43,6 +52,7 @@ describe("login router", () => {
     const httpResponse = sut.route(httpRequest);
 
     expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(new MissingParamError("email"));
   });
 
   it("Should return status 400 if password is not provided", () => {
@@ -56,6 +66,7 @@ describe("login router", () => {
     const httpResponse = sut.route(httpRequest);
 
     expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(new MissingParamError("password"));
   });
 
   it("Should return status 500 if httpRequest is not provided", () => {
