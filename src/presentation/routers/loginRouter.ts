@@ -9,13 +9,15 @@ interface IhttpRequest {
 }
 
 export class LoginRouter {
-  authUseCase: AuthUseCaseSpy;
-  constructor(authUseCase: AuthUseCaseSpy) {
+  authUseCase: AuthUseCaseSpy | { auth?: undefined };
+  constructor(authUseCase?: AuthUseCaseSpy | { auth?: undefined }) {
     this.authUseCase = authUseCase;
   }
   route(httpRequest?: IhttpRequest) {
     if (!httpRequest) return HttpResponse.serverError();
     if (!httpRequest.body) return HttpResponse.serverError();
+    if (!this.authUseCase) return HttpResponse.serverError();
+    if (!this.authUseCase.auth) return HttpResponse.serverError();
 
     const { email, password } = httpRequest.body;
 
