@@ -1,20 +1,20 @@
 import { LoginRouter } from "./loginRouter";
-import { MissingParamError } from "../helps/missingParamError";
-import { ServerError } from "../helps/serverError";
-import { UnauthorizedError } from "../helps/unauthorized";
+import { MissingParamError } from "../errors/missingParamError";
+import { ServerError } from "../errors/serverError";
+import { UnauthorizedError } from "../errors/unauthorized";
+import { AuthUseCase } from "../protocols/authUseCase";
 
-export class AuthUseCaseSpy {
-  email: string;
-  password: string;
-  accessToken: string;
-  async auth(email: string, password: string) {
-    this.email = email;
-    this.password = password;
-    return this.accessToken;
+export const makeSut = () => {
+  class AuthUseCaseSpy implements AuthUseCase {
+    email: string;
+    password: string;
+    accessToken: string;
+    async auth(email: string, password: string) {
+      this.email = email;
+      this.password = password;
+      return this.accessToken;
+    }
   }
-}
-
-const makeSut = () => {
   const authUseCaseSpy = new AuthUseCaseSpy();
   authUseCaseSpy.accessToken = "valid_token";
   const sut = new LoginRouter(authUseCaseSpy);
@@ -56,26 +56,6 @@ describe("login router", () => {
 
       expect(httpResponse.statusCode).toBe(400);
       expect(httpResponse.body).toEqual(new MissingParamError("password"));
-    });
-  });
-
-  describe("httpRequest", () => {
-    it("Should return status 500 if is not provided", async () => {
-      const { sut } = makeSut();
-
-      const httpResponse = await sut.route();
-
-      expect(httpResponse.statusCode).toBe(500);
-      expect(httpResponse.body).toEqual(new ServerError());
-    });
-
-    it("Should return status 500 if body is not provided", async () => {
-      const { sut } = makeSut();
-
-      const httpResponse = await sut.route({});
-
-      expect(httpResponse.statusCode).toBe(500);
-      expect(httpResponse.body).toEqual(new ServerError());
     });
   });
 

@@ -1,18 +1,13 @@
 import { HttpResponse } from "../helps/httpResponse";
-
-interface IhttpRequest {
-  body?: {
-    email?: string;
-    password?: string;
-  };
-}
+import { AuthUseCase } from "../protocols/authUseCase";
+import { HttpRequest } from "../protocols/http";
 
 export class LoginRouter {
-  authUseCase: any;
-  constructor(authUseCase: any) {
+  private readonly authUseCase: AuthUseCase;
+  constructor(authUseCase: AuthUseCase) {
     this.authUseCase = authUseCase;
   }
-  async route(httpRequest?: IhttpRequest) {
+  async route(httpRequest: HttpRequest) {
     try {
       const { email, password } = httpRequest.body;
 
