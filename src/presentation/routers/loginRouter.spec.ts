@@ -121,6 +121,7 @@ describe("login router", () => {
 
       const httpResponse = sut.route(httpRequest);
       expect(httpResponse.statusCode).toBe(200);
+      expect(httpResponse.body.accessToken).toEqual(authUseCaseSpy.accessToken);
     });
 
     it("Should return status 500 if is not provided", () => {

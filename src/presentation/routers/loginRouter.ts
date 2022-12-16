@@ -26,6 +26,6 @@ export class LoginRouter {
 
     const accessToken = this.authUseCase.auth(email, password);
     if (!accessToken) return HttpResponse.unauthorizedError();
-    return HttpResponse.ok();
+    return HttpResponse.ok({ accessToken });
   }
 }

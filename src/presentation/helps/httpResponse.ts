@@ -24,10 +24,11 @@ export class HttpResponse {
     };
   }
 
-  static ok() {
+  static ok(data: { accessToken: string }): any {
+    console.log(data);
     return {
       statusCode: 200,
-      body: new Ok(),
+      body: data,
     };
   }
 }
