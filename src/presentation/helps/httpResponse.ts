@@ -1,6 +1,7 @@
 import { MissingParamError } from "./missingParamError";
 import { ServerError } from "./serverError";
 import { UnauthorizedError } from "../helps/unauthorized";
+import { Ok } from "./ok";
 
 export class HttpResponse {
   static badRequest(paramName: string) {
@@ -20,6 +21,13 @@ export class HttpResponse {
     return {
       statusCode: 401,
       body: new UnauthorizedError(),
+    };
+  }
+
+  static ok() {
+    return {
+      statusCode: 200,
+      body: new Ok(),
     };
   }
 }
