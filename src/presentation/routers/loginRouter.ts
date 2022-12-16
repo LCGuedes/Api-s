@@ -13,14 +13,14 @@ export class LoginRouter {
   constructor(authUseCase?: AuthUseCaseSpy | { auth?: undefined }) {
     this.authUseCase = authUseCase;
   }
-  route(httpRequest?: IhttpRequest) {
+  async route(httpRequest?: IhttpRequest) {
     try {
       const { email, password } = httpRequest.body;
 
       if (!email) return HttpResponse.badRequest("email");
       if (!password) return HttpResponse.badRequest("password");
 
-      const accessToken = this.authUseCase.auth(email, password);
+      const accessToken = await this.authUseCase.auth(email, password);
       if (!accessToken) return HttpResponse.unauthorizedError();
       return HttpResponse.ok({ accessToken });
     } catch (error) {
