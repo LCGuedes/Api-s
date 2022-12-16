@@ -14,18 +14,17 @@ export class LoginRouter {
     this.authUseCase = authUseCase;
   }
   route(httpRequest?: IhttpRequest) {
-    if (!httpRequest) return HttpResponse.serverError();
-    if (!httpRequest.body) return HttpResponse.serverError();
-    if (!this.authUseCase) return HttpResponse.serverError();
-    if (!this.authUseCase.auth) return HttpResponse.serverError();
+    try {
+      const { email, password } = httpRequest.body;
 
-    const { email, password } = httpRequest.body;
+      if (!email) return HttpResponse.badRequest("email");
+      if (!password) return HttpResponse.badRequest("password");
 
-    if (!email) return HttpResponse.badRequest("email");
-    if (!password) return HttpResponse.badRequest("password");
-
-    const accessToken = this.authUseCase.auth(email, password);
-    if (!accessToken) return HttpResponse.unauthorizedError();
-    return HttpResponse.ok({ accessToken });
+      const accessToken = this.authUseCase.auth(email, password);
+      if (!accessToken) return HttpResponse.unauthorizedError();
+      return HttpResponse.ok({ accessToken });
+    } catch (error) {
+      return HttpResponse.serverError();
+    }
   }
 }
