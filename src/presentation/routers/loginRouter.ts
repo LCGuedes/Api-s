@@ -1,5 +1,4 @@
 import { HttpResponse } from "../helps/httpResponse";
-import { AuthUseCaseSpy } from "./loginRouter.spec";
 
 interface IhttpRequest {
   body?: {
@@ -9,8 +8,8 @@ interface IhttpRequest {
 }
 
 export class LoginRouter {
-  authUseCase: AuthUseCaseSpy | { auth?: undefined };
-  constructor(authUseCase?: AuthUseCaseSpy | { auth?: undefined }) {
+  authUseCase: any;
+  constructor(authUseCase: any) {
     this.authUseCase = authUseCase;
   }
   async route(httpRequest?: IhttpRequest) {
@@ -21,6 +20,7 @@ export class LoginRouter {
       if (!password) return HttpResponse.badRequest("password");
 
       const accessToken = await this.authUseCase.auth(email, password);
+
       if (!accessToken) return HttpResponse.unauthorizedError();
       return HttpResponse.ok({ accessToken });
     } catch (error) {
