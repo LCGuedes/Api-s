@@ -219,7 +219,7 @@ describe("SignUp", () => {
     const httpRequest = {
       body: {
         name: "any_name",
-        email: "invalid_email@email.com",
+        email: "any_email@email.com",
         password: "any_password",
         confirmPassword: "any_password",
       },
@@ -229,5 +229,26 @@ describe("SignUp", () => {
 
     expect(httpRespose.statusCode).toBe(500);
     expect(httpRespose.body).toEqual(new ServerError());
+  });
+
+  it("Should return status 200 if valid data is provided", () => {
+    const { sut } = makeSut();
+    const httpRequest = {
+      body: {
+        name: "valid_name",
+        email: "valid_email@email.com",
+        password: "any_password",
+        confirmPassword: "any_password",
+      },
+    };
+
+    const httpRespose = sut.handle(httpRequest);
+    expect(httpRespose.statusCode).toBe(200);
+    expect(httpRespose.body).toEqual({
+      id: "valid_id",
+      name: "valid_name",
+      email: "valid_email@email.com",
+      password: "valid_password",
+    });
   });
 });
