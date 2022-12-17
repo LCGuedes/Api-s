@@ -6,11 +6,14 @@ import {
 } from "../protocols";
 import { badRequest, serverError } from "../helps";
 import { InvalidParamError, MissingParamError } from "../errors";
+import { AddAccount } from "../../domain/useCases/addAccount";
 
 export class SignUpController implements Controller {
   private readonly emailValidator: EmailValidator;
-  constructor(emailValidator: EmailValidator) {
+  private readonly addAccount: AddAccount;
+  constructor(emailValidator: EmailValidator, addAccount: AddAccount) {
     this.emailValidator = emailValidator;
+    this.addAccount = addAccount;
   }
   handle(httpRequest: HttpRequest): HttpResponse {
     try {
@@ -24,6 +27,11 @@ export class SignUpController implements Controller {
       if (!isValid) return badRequest(new InvalidParamError("email"));
       if (password !== confirmPassword)
         return badRequest(new InvalidParamError("confirmPassword"));
+      this.addAccount.add({
+        name,
+        email,
+        password,
+      });
     } catch (error) {
       return serverError();
     }
