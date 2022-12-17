@@ -144,4 +144,21 @@ describe("SignUp", () => {
     expect(httpRespose.statusCode).toBe(400);
     expect(httpRespose.body).toEqual(new MissingParamError("confirmPassword"));
   });
+
+  it("Should return status 400 if confirmPassword fails", () => {
+    const { sut } = makeSut();
+    const httpRequest = {
+      body: {
+        name: "any_name",
+        email: "any_email",
+        password: "any_password",
+        confirmPassword: "any_confirmPassword",
+      },
+    };
+
+    const httpRespose = sut.handle(httpRequest);
+
+    expect(httpRespose.statusCode).toBe(400);
+    expect(httpRespose.body).toEqual(new InvalidParamError("confirmPassword"));
+  });
 });
