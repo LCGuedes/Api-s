@@ -210,4 +210,24 @@ describe("SignUp", () => {
       password: "any_password",
     });
   });
+
+  it("Should return status 500 if AddAccount throws", () => {
+    const { sut, addAccountStub } = makeSut();
+    jest.spyOn(addAccountStub, "add").mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const httpRequest = {
+      body: {
+        name: "any_name",
+        email: "invalid_email@email.com",
+        password: "any_password",
+        confirmPassword: "any_password",
+      },
+    };
+
+    const httpRespose = sut.handle(httpRequest);
+
+    expect(httpRespose.statusCode).toBe(500);
+    expect(httpRespose.body).toEqual(new ServerError());
+  });
 });
