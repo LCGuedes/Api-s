@@ -4,8 +4,8 @@ import {
   EmailValidator,
   Controller,
 } from "../protocols";
-import { badRequest } from "../helps";
-import { InvalidParamError, MissingParamError, ServerError } from "../errors";
+import { badRequest, serverError } from "../helps";
+import { InvalidParamError, MissingParamError } from "../errors";
 
 export class SignUpController implements Controller {
   private readonly emailValidator: EmailValidator;
@@ -22,7 +22,7 @@ export class SignUpController implements Controller {
       const isValid = this.emailValidator.isValid(httpRequest.body.email);
       if (!isValid) return badRequest(new InvalidParamError("email"));
     } catch (error) {
-      return { statusCode: 500, body: new ServerError() };
+      return serverError();
     }
   }
 }
