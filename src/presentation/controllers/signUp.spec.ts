@@ -37,4 +37,19 @@ describe("SignUp", () => {
     expect(httpRespose.statusCode).toBe(400);
     expect(httpRespose.body).toEqual(new MissingParamError("email"));
   });
+  it("Should return status 400 if password is not provided", () => {
+    const sut = makeSut();
+    const httpRequest = {
+      body: {
+        name: "any_name",
+        email: "any_email",
+        confirmPassword: "any_confirmPassword",
+      },
+    };
+
+    const httpRespose = sut.handle(httpRequest);
+
+    expect(httpRespose.statusCode).toBe(400);
+    expect(httpRespose.body).toEqual(new MissingParamError("password"));
+  });
 });
