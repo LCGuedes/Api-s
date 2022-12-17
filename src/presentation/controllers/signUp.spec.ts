@@ -2,10 +2,8 @@ import { SignUpController } from "../controllers/signUp";
 import { EmailValidator } from "../protocols";
 import { MissingParamError, InvalidParamError, ServerError } from "../errors";
 
-interface SutTypes {
-  sut: SignUpController;
-  emailValidatorStub: EmailValidator;
-}
+import { AddAccount, AddAccountModel } from "../../domain/useCases/addAccount";
+import { AccountModel } from "../../domain/models/Account";
 
 const makeEmailValidator = (): EmailValidator => {
   class EmailValidatorStub implements EmailValidator {
@@ -16,12 +14,36 @@ const makeEmailValidator = (): EmailValidator => {
   return new EmailValidatorStub();
 };
 
+const makeAccount = (): AddAccount => {
+  class AddAccountStub implements AddAccount {
+    add(account: AddAccountModel): AccountModel {
+      const fakeAccount = {
+        id: "valid_id",
+        name: "valid_name",
+        email: "valid_email@email.com",
+        password: "valid_password",
+      };
+      return fakeAccount;
+    }
+  }
+
+  return new AddAccountStub();
+};
+
+interface SutTypes {
+  sut: SignUpController;
+  emailValidatorStub: EmailValidator;
+  addAccountStub: AddAccount;
+}
+
 const makeSut = (): SutTypes => {
   const emailValidatorStub = makeEmailValidator();
-  const sut = new SignUpController(emailValidatorStub);
+  const addAccountStub = makeAccount();
+  const sut = new SignUpController(emailValidatorStub, addAccountStub);
   return {
     sut,
     emailValidatorStub,
+    addAccountStub,
   };
 };
 
@@ -64,7 +86,7 @@ describe("SignUp", () => {
     const httpRequest = {
       body: {
         name: "any_name",
-        email: "invalid_email",
+        email: "invalid_email@email.com",
         password: "any_password",
         confirmPassword: "any_confirmPassword",
       },
@@ -82,7 +104,7 @@ describe("SignUp", () => {
     const httpRequest = {
       body: {
         name: "any_name",
-        email: "any_email",
+        email: "any_email@email.com",
         password: "any_password",
         confirmPassword: "any_confirmPassword",
       },
@@ -90,7 +112,7 @@ describe("SignUp", () => {
 
     sut.handle(httpRequest);
 
-    expect(isValidSpy).toBeCalledWith("any_email");
+    expect(isValidSpy).toBeCalledWith("any_email@email.com");
   });
 
   it("Should return status 500 if EmailValidator throws", () => {
@@ -101,7 +123,7 @@ describe("SignUp", () => {
     const httpRequest = {
       body: {
         name: "any_name",
-        email: "invalid_email",
+        email: "invalid_email@email.com",
         password: "any_password",
         confirmPassword: "any_confirmPassword",
       },
@@ -118,7 +140,7 @@ describe("SignUp", () => {
     const httpRequest = {
       body: {
         name: "any_name",
-        email: "any_email",
+        email: "any_email@email.com",
         confirmPassword: "any_confirmPassword",
       },
     };
@@ -134,7 +156,7 @@ describe("SignUp", () => {
     const httpRequest = {
       body: {
         name: "any_name",
-        email: "any_email",
+        email: "any_email@email.com",
         password: "any_password",
       },
     };
@@ -150,7 +172,7 @@ describe("SignUp", () => {
     const httpRequest = {
       body: {
         name: "any_name",
-        email: "any_email",
+        email: "any_email@email.com",
         password: "any_password",
         confirmPassword: "any_confirmPassword",
       },
@@ -160,5 +182,26 @@ describe("SignUp", () => {
 
     expect(httpRespose.statusCode).toBe(400);
     expect(httpRespose.body).toEqual(new InvalidParamError("confirmPassword"));
+  });
+
+  it("Should call AddAcount with correct values", () => {
+    const { sut, addAccountStub } = makeSut();
+    const addSpy = jest.spyOn(addAccountStub, "add");
+    const httpRequest = {
+      body: {
+        name: "any_name",
+        email: "any_email@email.com",
+        password: "any_password",
+        confirmPassword: "any_password",
+      },
+    };
+
+    sut.handle(httpRequest);
+
+    expect(addSpy).toBeCalledWith({
+      name: "any_name",
+      email: "any_email@email.com",
+      password: "any_password",
+    });
   });
 });
