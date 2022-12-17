@@ -19,4 +19,19 @@ describe("SignUp", () => {
 
     expect(httpRespose.statusCode).toBe(400);
   });
+
+  it("Should return status 400 if email is not provided", () => {
+    const sut = makeSut();
+    const httpRequest = {
+      body: {
+        name: "any_name",
+        password: "any_password",
+        confirmPassword: "any_confirmPassword",
+      },
+    };
+
+    const httpRespose = sut.handle(httpRequest);
+
+    expect(httpRespose.statusCode).toBe(400);
+  });
 });
