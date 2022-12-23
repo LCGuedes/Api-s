@@ -10,8 +10,10 @@
     "test": "jest --watch"
   },
   "devDependencies": {
+    "@shelf/jest-mongodb": "^4.1.4",
     "@types/bcrypt": "^5.0.0",
     "@types/jest": "^29.2.4",
+    "@types/mongodb": "^4.0.7",
     "@types/node": "^18.11.14",
     "@types/validator": "^13.7.10",
     "concurrently": "^7.6.0",
@@ -23,6 +25,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "mongodb": "^4.13.0",
     "typescript": "^4.9.4",
     "validator": "^13.7.0"
   }

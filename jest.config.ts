@@ -3,7 +3,8 @@ export default {
   collectCoverage: true,
   coverageDirectory: "coverage",
   coverageProvider: "v8",
-  preset: "ts-jest",
+  preset: ["@shelf/jest-mongodb"],
   testEnvironment: "node",
+
   testPathIgnorePatterns: ["/node_modules/", "/dist/"],
 };
